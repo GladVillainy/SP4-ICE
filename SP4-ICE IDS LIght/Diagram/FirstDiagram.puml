@@ -1,5 +1,4 @@
 @startuml
-@startuml
 !pragma layout smetana
 
 class SecuritySystem{
@@ -46,5 +45,4 @@ SecuritySystem *-- Admin
 Threat o-- LogEntry
 LogEntry --o SecuritySystem
 
-@enduml
 @enduml
