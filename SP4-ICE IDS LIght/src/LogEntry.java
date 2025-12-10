@@ -7,4 +7,12 @@ public class LogEntry {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "LogEntry{" +
+                "timestamp=" + timestamp +
+                ", user='" + user + '\'' +
+                '}';
+    }
 }
