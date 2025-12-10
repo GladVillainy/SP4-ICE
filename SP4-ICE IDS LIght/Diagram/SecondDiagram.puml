@@ -1,0 +1,49 @@
+@startuml
+!pragma layout smetana
+
+class SecuritySystem{
+- LogEntries : List<LogEntry>
+- threats : List<Threat>
+
+addLogEntry()
+boolean bruteForce()
+boolean excessiveDeletion()
+boolean offHoursLogin()
+}
+
+class Threat{
+- String : type
+- String : description
+- LocalDateTime : timestamp
+- String : severity
+- List<LogEntry> : relatedEntries
+}
+
+class Admin{
+- String : password
+- String : username
+
+showThreat()
+showLogEntry()
+usersConfig()
+}
+
+class LogEntry{
+- LocalDateTime : timestamp
+- String : user
+}
+
+class Rules {
+bruteForceExecute()
+excessiveDeletionExecute()
+offHoursLoginExecute()
+}
+
+SecuritySystem o-- Rules
+SecuritySystem o-- Threat
+SecuritySystem *-- Admin
+
+Threat o-- LogEntry
+LogEntry --o SecuritySystem
+
+@enduml
