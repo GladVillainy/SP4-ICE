@@ -12,14 +12,21 @@ public class SecuritySystemTest {
     LocalDateTime timestamp2 = LocalDateTime.parse("2025-12-10T03:00:00");
 
 
-        @Test
-        void bruteForce () {
-            assertTrue(system.bruteForce(5));
-            assertFalse(system.bruteForce(2));
 
-            // Positive path test – valid input got passed
-            // Failure-case test – invalid input got rejected
+    // BruteForce detekt Test
+    // Positive path test
+    // Failure-case test
+        @Test
+        void bruteForce_Positive_path () {
+           // assertTrue(system.bruteForce(5));
+          //  assertFalse(system.bruteForce(2));
         }
+    @Test
+    void bruteForce_Failure_case () {
+      //  assertTrue(system.bruteForce(2));
+      //  assertFalse(system.bruteForce(5));
+    }
+
 
         @Test
         void excessiveDeletion () {

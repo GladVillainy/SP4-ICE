@@ -1,3 +1,5 @@
+import SP3.User;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ public class SecuritySystem {
    private ArrayList<LogEntry> logEntries = new ArrayList<>();
    private  ArrayList<Threat> threats;
 
-    Rules RS = new Rules();
+    Rules rule = new Rules();
 
 
     public void addLogEntry(String name, LocalDateTime timestamp){
@@ -23,13 +25,13 @@ public class SecuritySystem {
         return threats;
     }
 
-    public boolean bruteForce(int attempts) {
+
+    public void bruteForce(User failedAttempts, User user, LocalDateTime timestamp) {
         int limit = 3;
-        if (limit < attempts) {
-            RS.bruteForceExecute();
-            return true;
-        } else {
-            return false;
+        if (limit < failedAttempts.getFailedAttempts()) {
+            Threat BF = new Threat("Bruteforce", logEntries,"Moderate", timestamp, "Forcing entry has been detected");
+            threats.add(BF);
+            rule.bruteForceExecute(user);
         }
     }
 
