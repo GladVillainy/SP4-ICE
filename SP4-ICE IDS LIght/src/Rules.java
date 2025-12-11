@@ -1,3 +1,8 @@
+import SP3.User;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 public class Rules {
     ArrayList<User> lockedUsers = new ArrayList();
     ArrayList<User> lockedOffHourUsers = new ArrayList();

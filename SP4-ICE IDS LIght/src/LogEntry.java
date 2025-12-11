@@ -1,15 +1,17 @@
+import SP3.User;
+
 import java.time.LocalDateTime;
 
 public class LogEntry {
     private LocalDateTime timestamp;
-    private String user;
+    private User user;
 
-    public LogEntry(String user, LocalDateTime timestamp) {
+    public LogEntry(User user, LocalDateTime timestamp) {
         this.user = user;
         this.timestamp = timestamp;
     }
 
-    public String getUser() {
+    public User getUser() {
         return user;
     }
 

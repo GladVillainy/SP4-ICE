@@ -7,13 +7,13 @@ import java.util.List;
 
 public class SecuritySystem {
    private ArrayList<LogEntry> logEntries = new ArrayList<>();
-   private  ArrayList<Threat> threats;
+   private ArrayList<Threat> threats = new ArrayList<>();
 
     Rules rule = new Rules();
 
 
-    public void addLogEntry(String name, LocalDateTime timestamp){
-        LogEntry LE = new LogEntry(name, timestamp);
+    public void addLogEntry(User user, LocalDateTime timestamp){
+        LogEntry LE = new LogEntry(user, timestamp);
         logEntries.add(LE);
     }
 
@@ -50,13 +50,13 @@ public class SecuritySystem {
         return true;
     }
 
-    public boolean offHoursLogin(LocalDateTime timestamp) {
+    public void offHoursLogin(User user, LocalDateTime timestamp) {
         LocalTime earliestHour = LocalTime.parse("08:00");
         LocalTime latestHour = LocalTime.parse("16:00");
         if (timestamp.toLocalTime().isBefore(earliestHour) || timestamp.toLocalTime().isAfter(latestHour)) {
-            return true;
-        } else {
-            return false;
+            Threat OHL = new Threat("Off hours login", logEntries,"Mild", timestamp, "Unusual login time has been detected");
+            threats.add(OHL);
+            rule.offHoursLoginExecute(user);
         }
     }
 }

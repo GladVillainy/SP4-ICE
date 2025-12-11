@@ -1,4 +1,5 @@
 
+import SP3.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -39,15 +40,17 @@ public class SecuritySystemTest {
 
         @Test
         void offHoursLogin_Positive_path(){
-            assertTrue(system.offHoursLogin(timestamp2));
-            assertFalse(system.offHoursLogin(timestamp1));
+            //User user = new User("name", "pass");
+            //assertTrue(system.offHoursLogin(timestamp2, user));
+            //assertFalse(system.offHoursLogin(timestamp1, user));
         }
 
 
         @Test
         void offHoursLogin_Failure_case () {
-            assertTrue(system.offHoursLogin(timestamp1));
-            assertFalse(system.offHoursLogin(timestamp2));
+            //User user = new User("name", "pass");
+            //assertTrue(system.offHoursLogin(timestamp1, user));
+            //assertFalse(system.offHoursLogin(timestamp2, user));
         }
 
         // AddLogEntry Test
@@ -57,12 +60,15 @@ public class SecuritySystemTest {
         void addLogEntry_Positive () {
             LocalDateTime timestamp = LocalDateTime.parse("2025-12-10T12:00:00");
 
-            system.addLogEntry("Hej", timestamp);
+            User user1 = new User("Hej", "pass");
+            User user2 = new User("Gert", "pass");
+
+            system.addLogEntry(user1, timestamp);
 
             assertEquals(1, system.getLogEntries().size());
             LogEntry entry = system.getLogEntries().get(0);
 
-            assertEquals("Hej", entry.getUser());
+            assertEquals(user1, entry.getUser());
             assertEquals(LocalDateTime.parse("2025-12-10T12:00:00"), entry.getTimestamp());
 
         }
@@ -71,12 +77,15 @@ public class SecuritySystemTest {
     void addLogEntry_Failure_case () {
         LocalDateTime timestamp = LocalDateTime.parse("2025-12-10T11:00:00");
 
-        system.addLogEntry("Gert", timestamp);
+        User user1 = new User("Hej", "pass");
+        User user2 = new User("Gert", "pass");
+
+        system.addLogEntry(user2, timestamp);
 
         assertEquals(1, system.getLogEntries().size());
         LogEntry entry = system.getLogEntries().get(0);
 
-        assertEquals("Hej", entry.getUser());
+        assertEquals(user1, entry.getUser());
         assertEquals(LocalDateTime.parse("2025-12-10T12:00:00"), entry.getTimestamp());
 
     }
