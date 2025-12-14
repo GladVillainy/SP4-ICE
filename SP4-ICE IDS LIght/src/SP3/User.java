@@ -1,14 +1,23 @@
 package SP3;
 
+import SP4.SecuritySystem;
+
 import java.util.ArrayList;
 
 public class User {
 
-// User authentication
+
+
+
+// ser authentication
     private String username;
     private String password;
-    private boolean locked;
+
+    //Ændret her
+    private boolean isLocked;
     private int failedAttempts;
+   // private int filesDeleted;
+    private boolean isAdmin;
 
 // User media information
   private ArrayList<Media> seenMedia = new ArrayList<Media>();
@@ -18,10 +27,13 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.failedAttempts = failedAttempts;
-        this.locked = false;
-    }
 
+        // Ændret her
+        this.failedAttempts = 0;
+       // this.filesDeleted = 0;
+        this.isLocked = false;
+        this.isAdmin = false;
+    }
 
 
 
@@ -36,19 +48,47 @@ public class User {
    public ArrayList<Media> getSeenMedia() {return seenMedia;}
    public void setSeenMedia(ArrayList<Media> seenMedie) {this.seenMedia = seenMedie;}
 
-    public boolean getLocked() {
-        return locked;
+
+
+
+    //Ændret her
+
+    public void showThreat(SecuritySystem system) {
+            System.out.println("--- Active threats---");
+            System.out.println(system.getThreats());
+
     }
 
-    public void setLocked(boolean locked) {
-        this.locked = locked;
+    public void showLogEntry(SecuritySystem system) {
+        System.out.println("---Security logs---");
+        System.out.println(system.getLogEntries());
     }
 
+    //Getter og sætter
+    public boolean getIsLocked() {
+        return isLocked;
+    }
+    public void setIsLocked(boolean isLocked) {
+        this.isLocked = isLocked;
+    }
     public int getFailedAttempts() {
         return failedAttempts;
     }
-
     public void setFailedAttempts(int failedAttempts) {
         this.failedAttempts = failedAttempts;
+    }
+    /*
+    public int getFilesDeleted() {
+        return filesDeleted;
+    }
+    public void setFilesDeleted(int filesDeleted) {
+        this.filesDeleted = filesDeleted;
+    }
+     */
+    public boolean getIsAdmin() {
+        return isAdmin;
+    }
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

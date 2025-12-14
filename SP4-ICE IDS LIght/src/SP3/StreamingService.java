@@ -2,9 +2,12 @@ package SP3;
 
 import SP3.utility_SP3.FileIO_SP3;
 import SP3.utility_SP3.TextUI_SP3;
+import SP4.SecuritySystem;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class StreamingService {
@@ -18,6 +21,9 @@ public class StreamingService {
     TextUI_SP3 ui = new TextUI_SP3();
     FileIO_SP3 IO = new FileIO_SP3();
 
+    //Ændret
+    SecuritySystem system = new SecuritySystem();
+
     public void start()
     {
         loadMedia();
@@ -25,6 +31,8 @@ public class StreamingService {
         loadUserMedia();
         startMenu();
         mainMenu();
+        system.loadThreat();
+        system.loadLogEntry();
     }
 
     private void loadUsers() {
@@ -269,9 +277,13 @@ public class StreamingService {
             } else if (choice == 2) {
                 User user = logIn();
                 if (user != null) {// Successful login
-                    if (user.getLocked() == false) {
+
+                    //Ændret her
+                    if (user.getIsLocked() == false) {
                         currentUser = user;
                         continueLoop = false; // proceed to main menu
+                        ui.displayMsg("Logged in as " + currentUser.getUsername());
+                        system.addLogEntry(currentUser, LocalDateTime.now());
                     } else {
                         ui.displayMsg("User is locked, returning to start menu...");
                     }
@@ -284,7 +296,6 @@ public class StreamingService {
             }
         }
     }
-
 
     private void mainMenu() {
         // Define menu options
@@ -303,10 +314,12 @@ public class StreamingService {
             // Handle the menu choice
             switch (choice) {
                 case 1:
-                    searchByName();
+                    AN.showThreat();
+                    // searchByName();
                     break;
                 case 2:
-                    searchByCategory();
+
+                    //  searchByCategory();
                     break;
 
                 case 3:
@@ -319,7 +332,6 @@ public class StreamingService {
                     saveUserMedia();
                     // Exit the program safely
                     ui.displayMsg("Exiting streaming service.");
-
                     System.exit(0);
                 default:
                     // If the input doesn't match a valid option
@@ -436,17 +448,26 @@ public class StreamingService {
                 return null;
             }
 
+            //Ændret her
             if (validateUser(username, password)) {
                 for (User u : users) {
                     if (u.getUsername().equals(username)) {
                         foundUser = u;
+
+                       //system.offHoursLogin(u, LocalDateTime.now());
+
+                        //For at teste off hour lås
+                        system.offHoursLogin(u, LocalDateTime.parse("2025-12-12T12:00:00"));
                         break;
                     }
                 }
-
-                ui.displayMsg("Logged in as " + username);
                 loggedIn = true;
             } else {
+                for(User u : users) {
+                    if (u.getUsername().equals(username)){
+                        system.bruteForce(u, LocalDateTime.now());
+                    }
+                }
                 ui.displayMsg("Invalid username or password. Try again, or type 'back' to return.");
             }
         }

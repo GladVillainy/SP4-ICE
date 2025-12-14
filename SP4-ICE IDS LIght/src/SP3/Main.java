@@ -1,12 +1,37 @@
 package SP3;
 
+import java.time.LocalDateTime;
+
 public class Main {
     public static void main(String[] args) {
         StreamingService streaming = new StreamingService();
 
+
+        //Ændret her
         User testLocked = new User("TestLocked", "TestLocked");
-        testLocked.setLocked(true);
+        testLocked.setIsLocked(true);
         streaming.getUsers().add(testLocked);
+
+        User testBrute= new User("TestBrute", "TestBrue");
+        streaming.getUsers().add(testBrute);
+
+
+      //Disse users' logintidspunkter kan blive testet
+        // Ved at hardcode tidspunktet på linje 457 i StreamingService
+
+        User testOffLoginPostive = new User("TestPostive", "TestPostive");
+        streaming.getUsers().add(testOffLoginPostive);
+
+        User testOffLoginNegativ = new User("TestNegativ", "TestNegativ");
+        streaming.getUsers().add(testOffLoginNegativ);
+
+
+
+        //Admin test
+        User Admin = new User("admin", "admin");
+        Admin.setIsAdmin(true);
+        streaming.getUsers().add(Admin);
+
 
         streaming.start();
 

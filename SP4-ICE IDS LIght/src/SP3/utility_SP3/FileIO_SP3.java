@@ -1,10 +1,4 @@
-package SP3.utility_SP3;/*
-*  Utility class to persist the Strings in an ArrayList
-*  To use, each object in a list must first be serialized (field values of the object are added to the same String, separated by comma)
-*
-*  TODO: To avoid leakage, both scanner and FileWriter must be closed, suggestion to use try-with-ressources in both methods
-*  TODO: catch exception if the file is found but empty
-* */
+package SP3.utility_SP3;
 
 import java.io.File;
 import java.io.FileNotFoundException;

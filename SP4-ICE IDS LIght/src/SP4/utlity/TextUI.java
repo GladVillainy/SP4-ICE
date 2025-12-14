@@ -1,4 +1,4 @@
-package utlity;
+package SP4.utlity;
 
 import java.util.ArrayList;
 import java.util.Scanner;

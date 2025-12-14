@@ -1,0 +1,190 @@
+@startuml
+!pragma layout smetana
+
+SecuritySystem o-- Rules
+SecuritySystem o-- Threat
+Threat o-- LogEntry
+SecuritySystem o-- LogEntry
+TextUI <-- Rules
+FileIO <-- SecuritySystem
+
+StreamingService --o SecuritySystem
+SecuritySystem <-- User
+class SecuritySystem{
+- LogEntries : List<LogEntry>
+- threats : List<Threat>
+
+
+addLogEntry(User user, LocalDateTime timestamp)
+loadLogEntry()
+loadThreat()
+addThreat(String type, ArrayList<LogEntry> relatedEntries, String severity, LocalDateTime timestamp, String description)
+
+public void excessiveDeletion(User user, LocalDateTime timestamp)
+bruteForce(User user, LocalDateTime timestamp)
+offHoursLogin(User user, LocalDateTime timestamp)
+}
+
+class Threat{
+- String : type
+- String : description
+- LocalDateTime : timestamp
+- String : severity
+- List<LogEntry> : relatedEntries
+}
+
+class LogEntry{
+- LocalDateTime : timestamp
+- String : user
+}
+
+class Rules {
+- ArrayList <Users> lockedUsers
+- ArrayList <Users> lockedOffHourUsers
+
+bruteForceExecute(User user)
+excessiveDeletionExecute(User user)
+offHoursLoginExecute(User user)
+}
+
+class TextUI{
++ ArrayList<String> promptChoice( ArrayList<String> options, int limit, String msg)
++ displayList(ArrayList<String>list, String msg)
++ displayMsg(String msg)
++ promptNumeric(String msg)
++ String promptText(String msg)
++ promptBinary(String msg)
++ promptMenuOptions(ArrayList<String> menuOptions)
++ promptMenu(String menuHeading, ArrayList<String> menuOptions)
+}
+
+class FileIO{
++ saveData(ArrayList<String> list, String path, String header)
++ ArrayList<String> readData(String path)
++ String[] readData(String path, int length)
+}
+
+
+
+
+
+
+
+
+TextUI_SP3 <-- StreamingService
+FileIO_SP3 <-- StreamingService
+Category <-- StreamingService
+
+
+Main *-- StreamingService
+StreamingService "1" *-- "*" User
+StreamingService "1" *-- "*" Media
+
+Media <|-- Movie
+Media <|-- Series
+
+Playable <|.. Movie
+Playable <|.. Series
+
+class Category {
+- ArrayList All (Arrays.asList)
+}
+
+class Main{
++ main (String[] args)
+}
+
+class StreamingService{
+- ArrayList movies
+- ArrayList series
+- ArrayList users
+- User currentUser
+- List mediaLibrary
+
+-usernameToUser (String username)
+-userConfig()
+
++ start()
+- loadUsers()
+- loadMedia()
+- loadUserMedia()
+- saveUserMedia()
+- validateUser(String username, String password)
+- createNewUser()
+- startMenu()
+- mainMenu()
+- searchByName()
+- searchByCategory()
+- getListOfSaved()
+- getListOfWatched()
+- logIn()
+}
+
+abstract class Media
+{
+# String name
+# int ReleaseYear
+# double rating
+# String category
+
++ media(String name, int releaseYear, double rating, String category)
++ playMedia(User currentUser)
+}
+
+class Movie
+{
+- lengthInMinutes
+
++playMedia(User u)
++ Movie(String name, int releaseYear, double rating, String category, double lengthInMinutes)
+}
+
+class Series
+{
+- int season
+- int episode
+- int endYear
+- List seasons
+- String yearRange
+
++ Series(String name, int releaseYear, double rating, String category, int season, int episode, int endYear)
++ playMedia(User u)
+
+}
+
+class User
+{
+- String username
+- String password
+- Arraylist seenMedie
+- Arraylist wantsToSee
+
+-Boolean IsLocked
+-Boolean IsAdmin
+-Int failedAttempts
+}
+
+class TextUI_SP3{
++ ArrayList<String> promptChoice( ArrayList<String> options, int limit, String msg)
++ displayList(ArrayList<String>list, String msg)
++ displayMsg(String msg)
++ promptNumeric(String msg)
++ String promptText(String msg)
++ promptBinary(String msg)
++ promptMenuOptions(ArrayList<String> menuOptions)
++ promptMenu(String menuHeading, ArrayList<String> menuOptions)
+}
+
+class FileIO_SP3{
++ saveData(ArrayList<String> list, String path, String header)
++ ArrayList<String> readData(String path)
++ String[] readData(String path, int length)
+}
+
+interface Playable
+{
+
+}
+
+
+@enduml
