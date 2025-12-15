@@ -3,6 +3,8 @@ package SP4;
 
 import SP3.User;
 import SP4.utlity.FileIO;
+import SP4.utlity.TextUI;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -21,10 +23,16 @@ import java.util.Set;
 public class SecuritySystem {
    private ArrayList<LogEntry> logEntries = new ArrayList<>();
    private ArrayList<Threat> threats = new ArrayList<>();
+   private ArrayList<String> fileLines = new ArrayList<>();
 
-    Rules rule = new Rules();
     FileIO IO = new FileIO();
+    TextUI UI = new TextUI();
 
+    private Rules rule;
+
+    public SecuritySystem() {
+        this.rule = new Rules(this);
+    }
 
     /**
      * @author Lucas & Mikkel
@@ -119,8 +127,8 @@ public class SecuritySystem {
             }
         }
 
-        int limit = 10; //Can be edited to fit the need of the admin
-        if (deletedLines.size() > limit){
+        int limit = 2; //Can be edited to fit the need of the admin
+        if (user.getDeletedLines() > limit){
             Threat ED = new Threat("Excessive deletion", logEntries,"Severe", timestamp, "Excessive file deletion has been detected");
             threats.add(ED);
             rule.excessiveDeletionExecute(user);
@@ -153,5 +161,77 @@ public class SecuritySystem {
             threats.add(OHL);
             rule.offHoursLoginExecute(user);
         }
+    }
+
+    public void deleteLineInFile(User user){
+        String path = UI.promptText("Type the name of the file, or type 'back' to cancel");
+        if (path.equalsIgnoreCase("back") == false) {
+            fileLines = IO.readData(path);
+            if (!fileLines.isEmpty()) {
+                boolean continueLoop = true;
+                while (continueLoop) {
+                    int choice = UI.promptNumeric("Select line to delete");
+                    fileLines.remove(choice);
+                    user.setDeletedLines(user.getDeletedLines() + 1);
+                    continueLoop = UI.promptBinary("Delete another line? Y/N");
+                }
+                IO.saveData(fileLines, path);
+                excessiveDeletion(user, LocalDateTime.now(), "SP4-ICE IDS LIght/CSVDataTest/MoviesBackup.csv", path);
+            }
+        }
+    }
+
+    /**
+     * @author Lucas & Mikkel
+     * This method loads CSV entry data
+     */
+    public void loadLogEntry() {
+        logEntries.clear();
+
+        // Load LogEntry
+        List<String> logEntryLines = IO.readData("LogEntry.csv");
+        for (String line : logEntryLines) {
+            if (line.trim().isEmpty()) continue;
+            String[] parts = line.split(";");
+            String username = parts[0].trim();
+            LocalDateTime timestamp = LocalDateTime.parse(parts[1].trim());
+            logEntries.add(new LogEntry(username, timestamp));
+        }
+    }
+
+
+    /**
+     * @author Lucas & Mikkel
+     * This method loads CSV threat data
+     */
+    public void loadThreat() {
+        threats.clear();
+        // Load Threat
+        List<String> threatLines = IO.readData("Threat.csv");
+        ArrayList<LogEntry> relatedEntries = new ArrayList<>();
+
+        for (String line : threatLines) {
+            if (line.trim().isEmpty()) continue;
+            String[] parts = line.split(";");
+            String type = parts[0].trim();
+            String relatedEntryUsername = parts[1].trim();
+            LocalDateTime relatedEntryTimeStamp = LocalDateTime.parse(parts[2].trim());
+            String severity = parts[3].trim();
+            LocalDateTime timestamp = LocalDateTime.parse(parts[4].trim());
+            String description = parts[5].trim();
+
+            LogEntry relatedEntry = new LogEntry(relatedEntryUsername, relatedEntryTimeStamp);
+            relatedEntries.add(relatedEntry);
+
+            threats.add(new Threat(type, relatedEntries, severity, timestamp, description));
+        }
+    }
+
+//Getter
+    public ArrayList<LogEntry> getLogEntries() {
+        return logEntries;
+    }
+    public ArrayList<Threat> getThreats() {
+        return threats;
     }
 }

@@ -15,6 +15,10 @@ public class Rules {
     private ArrayList<User> lockedUsers = new ArrayList();
     private ArrayList<User> lockedOffHourUsers = new ArrayList();
 
+    public Rules(SecuritySystem system) {
+        this.system = system;
+    }
+
 
     TextUI ui = new TextUI();
 

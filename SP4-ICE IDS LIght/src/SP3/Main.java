@@ -1,11 +1,13 @@
 package SP3;
 
+import SP4.SecuritySystem;
+
 import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
-        StreamingService streaming = new StreamingService();
-
+        SecuritySystem securitySystem = new SecuritySystem();
+        StreamingService streaming = new StreamingService(securitySystem);
 
 
         //Ændret her
@@ -16,7 +18,7 @@ public class Main {
 
         User test= new User("Test", "Test");
         streaming.getUsers().add(test);
-
+//SP4-ICE IDS LIght/CSVDataTest/MoviesDynamisk.csv
 
       //Disse users' logintidspunkter kan blive testet
         // Ved at hardcode tidspunktet på linje 457 i StreamingService

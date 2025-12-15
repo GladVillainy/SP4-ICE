@@ -1,1 +1,3 @@
-﻿type;logEntryUsername;logEntryTimestamp;severity;timestamp;description
+type;logEntryUsername;logEntryTimestamp;severity;timestamp;description
+Excessive deletion;[SP4.LogEntry@6438a396];Severe;2025-12-15T21:17:12.218942;Excessive file deletion has been detected
+Excessive deletion;[SP4.LogEntry@6438a396];Severe;2025-12-15T21:17:12.238773;Excessive file deletion has been detected
