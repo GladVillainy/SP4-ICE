@@ -43,7 +43,7 @@ public class SecuritySystem {
         }
 
         // Saves information to CSV
-        String path = "SP4/LogData/LogEntry.csv";
+        String path = "SP4-ICE IDS LIght/LogData/LogEntry.csv";
         String header = "username;timestamp";
         IO.saveData(establish, path, header);
     }
@@ -69,7 +69,7 @@ public class SecuritySystem {
         }
 
         // Saves information to CSV
-        String path = "SP4/LogData/Threat.csv";
+        String path = "SP4-ICE IDS LIght/LogData/Threat.csv";
         String header = "type;logEntryUsername;logEntryTimestamp;severity;timestamp;description";
         IO.saveData(establish, path, header);
     }
