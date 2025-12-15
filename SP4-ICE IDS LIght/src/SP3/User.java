@@ -1,5 +1,7 @@
 package SP3;
 
+import SP3.utility_SP3.FileIO_SP3;
+import SP3.utility_SP3.TextUI_SP3;
 import SP4.SecuritySystem;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class User {
 // User media information
   private ArrayList<Media> seenMedia = new ArrayList<Media>();
     private ArrayList<Media> wantsToSee = new ArrayList<Media>();
+    FileIO_SP3 IO = new FileIO_SP3();
+    TextUI_SP3 UI = new TextUI_SP3();
 
 //Constructor
     public User(String username, String password) {
@@ -53,12 +57,21 @@ public class User {
 
     //Ændret her
 
+    /**
+     * @author Mikkel
+     * Shows the CSV threat file
+     * @param system
+     */
     public void showThreat(SecuritySystem system) {
             System.out.println("--- Active threats---");
             System.out.println(system.getThreats());
 
     }
-
+    /**
+     * @author Mikkel
+     * Shows the CSV login file
+     * @param system
+     */
     public void showLogEntry(SecuritySystem system) {
         System.out.println("---Security logs---");
         System.out.println(system.getLogEntries());
@@ -77,14 +90,6 @@ public class User {
     public void setFailedAttempts(int failedAttempts) {
         this.failedAttempts = failedAttempts;
     }
-    /*
-    public int getFilesDeleted() {
-        return filesDeleted;
-    }
-    public void setFilesDeleted(int filesDeleted) {
-        this.filesDeleted = filesDeleted;
-    }
-     */
     public boolean getIsAdmin() {
         return isAdmin;
     }

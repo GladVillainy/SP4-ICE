@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Lucas & Mikkel
+ * Class made to create threats
+ */
 public class Threat {
     private String type;
     private String description;
@@ -11,6 +15,14 @@ public class Threat {
     private String severity;
     private ArrayList<LogEntry> relatedEntries;
 
+    /**
+     * Constructor to create treats
+     * @param type
+     * @param relatedEntries
+     * @param severity
+     * @param timestamp
+     * @param description
+     */
     public Threat(String type, ArrayList<LogEntry> relatedEntries, String severity, LocalDateTime timestamp, String description) {
         this.type = type;
         this.relatedEntries = relatedEntries;
