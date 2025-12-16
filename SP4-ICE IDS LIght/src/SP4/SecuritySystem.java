@@ -14,7 +14,6 @@ import java.util.Set;
 
 /**
  * @author Lucas & Mikkel
- *
  * SecuritySystem is the main logic of the whole program.
  * It handles input from user logins and distributes it to rules class
  * And stores different login entry and treats in their respetive CSV file
@@ -163,6 +162,13 @@ public class SecuritySystem {
         }
     }
 
+    /**
+     * @author Mikkel
+     * Method prompts user if they want to delete a line in a csv file.
+     * If user types y, they are able to selecte the line number they want to delete
+     * If user tpyes n, they will return to main menu in SP3 StreamingService
+     * @param user
+     */
     public void deleteLineInFile(User user){
         String path = UI.promptText("Type the name of the file, or type 'back' to cancel");
         if (path.equalsIgnoreCase("back") == false) {

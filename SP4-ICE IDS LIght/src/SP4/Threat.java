@@ -31,6 +31,9 @@ public class Threat {
         this.description = description;
     }
 
+
+
+    //Getters & Setters
     public String getType() {
         return type;
     }

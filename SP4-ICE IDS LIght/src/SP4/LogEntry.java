@@ -18,8 +18,10 @@ public class LogEntry {
         this.timestamp = timestamp;
     }
 
-    public User getUser() {
-        return user;
+
+    //Getters
+    public String getUsername() {
+        return username;
     }
 
     public LocalDateTime getTimestamp() {

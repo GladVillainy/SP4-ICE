@@ -22,12 +22,13 @@ public class StreamingService {
     TextUI_SP3 ui = new TextUI_SP3();
     FileIO_SP3 IO = new FileIO_SP3();
 
-    //Ændret
+    //Added - Can use sercuritySystem methods in StreamingService
     private SecuritySystem securitySystem;
 
     public StreamingService(SecuritySystem securitySystem) {
         this.securitySystem = securitySystem;
     }
+
 
     public void start()
     {
@@ -36,6 +37,8 @@ public class StreamingService {
         loadUserMedia();
         startMenu();
         mainMenu();
+
+        //Added - to be able to use our methods
         securitySystem.loadThreat();
         securitySystem.loadLogEntry();
     }
@@ -232,7 +235,7 @@ public class StreamingService {
         return false;
     }
 
-    //Ændret her
+    //Added - to be able to validate username for bruteforce.
     private User usernameToUser (String username) {
         for (User u : users) {
             if (u.getUsername().equals(username)) {
@@ -302,7 +305,7 @@ public class StreamingService {
                 User user = logIn();
                 if (user != null) {// Successful login
 
-                    //Ændret her
+                    //Added - Blocks user if they login with a locked account
                     if (user.getIsLocked() == false) {
                         currentUser = user;
                         continueLoop = false; // proceed to main menu
@@ -330,7 +333,7 @@ public class StreamingService {
         menuOptions.add("Get list of movies you have already seen");
         menuOptions.add("Exit streaming service");
 
-        // edited here
+        // Added - Admin console
         if(currentUser.getIsAdmin() == true) {
             menuOptions.add("ADMIN: Show all threats");
             menuOptions.add("ADMIN: Show all log entries");
@@ -342,7 +345,7 @@ public class StreamingService {
         while (true) {
             // Prompt user for input using TextUI
             int choice = ui.promptMenu("Main Menu", menuOptions);
-
+            //Added - Changed switch case to a if statement (below)
             // Handle the menu choice
             /*
             switch (choice) {
@@ -372,8 +375,7 @@ public class StreamingService {
             }
             */
 
-            // Ændret her
-            // Edited from switch case to if statement, beacuse it was easiest to work with.
+            // Added - If statement as it was easier to work with in this case.
              // See above for the orginal design
             if (choice == 1) {
                 searchByName();
@@ -388,6 +390,8 @@ public class StreamingService {
                 // Exit the program safely
                 ui.displayMsg("Exiting streaming service.");
                 System.exit(0);
+
+                //Added - if Admin you are able to have different menu options
             } else if (choice == 6 && currentUser.getIsAdmin() == true) {
                 currentUser.showThreat(securitySystem);
             } else if (choice == 7 && currentUser.getIsAdmin() == true) {
@@ -515,7 +519,7 @@ public class StreamingService {
                 return null;
             }
 
-            //Ændret her
+            //Added - To be able to get login date information
             if (validateUser(username, password)) {
                 for (User u : users) {
                     if (u.getUsername().equals(username)) {

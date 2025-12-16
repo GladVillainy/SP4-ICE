@@ -15,7 +15,7 @@ public class User {
     private String username;
     private String password;
 
-    //Ændret her
+    //Added - New variables
     private boolean isLocked;
     private int failedAttempts;
    // private int filesDeleted;
@@ -24,15 +24,14 @@ public class User {
 // User media information
   private ArrayList<Media> seenMedia = new ArrayList<Media>();
     private ArrayList<Media> wantsToSee = new ArrayList<Media>();
-    FileIO_SP3 IO = new FileIO_SP3();
-    TextUI_SP3 UI = new TextUI_SP3();
+
 
 //Constructor
     public User(String username, String password) {
         this.username = username;
         this.password = password;
 
-        // Ændret her
+        // Added - New variables
         this.failedAttempts = 0;
        // this.filesDeleted = 0;
         this.isLocked = false;
@@ -55,7 +54,7 @@ public class User {
 
 
 
-    //Ændret her
+    //Added - everything under
 
     /**
      * @author Mikkel
@@ -65,7 +64,6 @@ public class User {
     public void showThreat(SecuritySystem system) {
             System.out.println("--- Active threats---");
             System.out.println(system.getThreats());
-
     }
     /**
      * @author Mikkel
@@ -77,7 +75,9 @@ public class User {
         System.out.println(system.getLogEntries());
     }
 
-    //Getter og sætter
+
+
+    //Getter og setter
     public boolean getIsLocked() {
         return isLocked;
     }
