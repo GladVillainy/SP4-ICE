@@ -8,53 +8,59 @@ import java.util.ArrayList;
 
 /**
  * @author Mikkel, Lucas & Jökull
- * Class that acts based on what SecuritySystem detacteds
+ * Class that acts based on what SecuritySystem detects
  */
 public class Rules {
-    private SecuritySystem system;
+
+    //variables
     private ArrayList<User> lockedUsers = new ArrayList();
     private ArrayList<User> lockedOffHourUsers = new ArrayList();
 
+    //Method calling
+    private SecuritySystem system;
+    private User user;
     public Rules(SecuritySystem system) {
         this.system = system;
+        this.user = user;
     }
-
-
     TextUI ui = new TextUI();
 
 
     /**
      * @author Lucas
      * Method that locks the user if bruteforce has been detected.
-     * It adds the user and creates a moderate threat
+     * It adds the user to the locked list and creates a moderate threat
+     * Read more about threat in Threat class
      * @param user
      */
     public void bruteForceExecute(User user){
         user.setIsLocked(true);
         lockedUsers.add(user);
         ui.displayMsg("This user: "+ user.getUsername()+ " is locked");
-        system.addThreat("Bruteforce", system.getLogEntries(), "Moderate", LocalDateTime.now(), "Bruteforce has been detected");
+        system.addThreat("Bruteforce",user.getUsername(), "Moderate", LocalDateTime.now(), "Bruteforce has been detected");
     }
 
 
     /**
      * @author Jökull
      * Method that locks the user if excessive deletion has been detected.
-     * It adds the user and creates a severe threat
+     * It adds the user to the locked list and creates a severe threat
+     * Read more about threat in Threat class
      * @param user
      */
     public void excessiveDeletionExecute(User user){
         user.setIsLocked(true);
         lockedUsers.add(user);
         ui.displayMsg("This user: "+ user.getUsername()+ " is locked");
-        system.addThreat("Excessive deletion", system.getLogEntries(), "Severe", LocalDateTime.now(), "Excessive file deletion has been detected");
+        system.addThreat("Excessive deletion", user.getUsername(), "Severe", LocalDateTime.now(), "Excessive file deletion has been detected");
 
     }
 
     /**
      * @author Mikkel
      * Method locks the user in the off work hour.
-     * It adds the user and creates a mild threat
+     * It adds the user to the locked list and creates a mild threat
+     * Read more about threat in Threat class
      * @param user
      */
     public void offHoursLoginExecute(User user){
@@ -62,6 +68,6 @@ public class Rules {
         lockedOffHourUsers.add(user);
         ui.displayMsg("This user: "+ user.getUsername()+ " is on off hour lock");
 
-        system.addThreat("Off hour login", system.getLogEntries(), "Mild", LocalDateTime.now(), "Off hour login has been detected");
+        system.addThreat("Off hour login", user.getUsername(), "Mild", LocalDateTime.now(), "Off hour login has been detected");
     }
 }

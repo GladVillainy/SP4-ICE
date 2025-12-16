@@ -1,0 +1,7 @@
+type;username;severity;timestamp;description
+Excessive deletion;Test;Severe;2025-12-16T13:51:34.622863;Excessive file deletion has been detected
+Bruteforce;Test;Moderate;2025-12-16T14:10:38.879324;Bruteforce has been detected
+Excessive deletion;Test;Severe;2025-12-16T14:13:35.828004;Excessive file deletion has been detected
+Excessive deletion;Test3;Severe;2025-12-16T14:41:40.771926;Excessive file deletion has been detected
+Excessive deletion;Test4;Severe;2025-12-16T14:46:46.144446;Excessive file deletion has been detected
+Excessive deletion;admin;Severe;2025-12-16T14:47:51.231582;Excessive file deletion has been detected

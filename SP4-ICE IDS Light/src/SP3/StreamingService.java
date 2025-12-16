@@ -22,7 +22,7 @@ public class StreamingService {
     TextUI_SP3 ui = new TextUI_SP3();
     FileIO_SP3 IO = new FileIO_SP3();
 
-    //Added - Can use sercuritySystem methods in StreamingService
+    //Added - Can use SecuritySystem methods in StreamingService
     private SecuritySystem securitySystem;
 
     public StreamingService(SecuritySystem securitySystem) {
@@ -32,19 +32,20 @@ public class StreamingService {
 
     public void start()
     {
+        //Added - to be able to use our methods
+        securitySystem.loadThreat();
+        securitySystem.loadLogEntry();
+
         loadMedia();
         loadUsers();
         loadUserMedia();
         startMenu();
         mainMenu();
 
-        //Added - to be able to use our methods
-        securitySystem.loadThreat();
-        securitySystem.loadLogEntry();
     }
 
     private void loadUsers() {
-        List<String> lines = IO.readData("SP4-ICE IDS LIght/data_SP3/userLogin.csv");
+        List<String> lines = IO.readData("SP4-ICE IDS Light/data_SP3/userLogin.csv");
         for (String line : lines) {
             if (line.startsWith("username")) continue; // skip header
             String[] parts = line.split(";");
@@ -60,7 +61,7 @@ public class StreamingService {
         mediaLibrary.clear();
 
         // Load Movies
-        List<String> movieLines = IO.readData("SP4-ICE IDS LIght/data_SP3/movies.csv");
+        List<String> movieLines = IO.readData("SP4-ICE IDS Light/data_SP3/movies.csv");
         for (String line : movieLines) {
             if (line.trim().isEmpty()) continue;
             String[] parts = line.split(";");
@@ -85,7 +86,7 @@ public class StreamingService {
         }
 
         // Load Series
-        List<String> seriesLines = IO.readData("SP4-ICE IDS LIght/data_SP3/series.csv");
+        List<String> seriesLines = IO.readData("SP4-ICE IDS Light/data_SP3/series.csv");
         for (String line : seriesLines) {
             if (line.trim().isEmpty()) continue;
 
@@ -125,7 +126,7 @@ public class StreamingService {
 
     private void loadUserMedia() {
         // Load seen media
-        List<String> seenLines = IO.readData("SP4-ICE IDS LIght/data_SP3/userSeen.csv");
+        List<String> seenLines = IO.readData("SP4-ICE IDS Light/data_SP3/userSeen.csv");
         for (String line : seenLines) {
             if (line.startsWith("username")) continue; // skip header
             String[] parts = line.split(";", 2); // username ; media1,media2,...
@@ -156,7 +157,7 @@ public class StreamingService {
         }
 
         // Load saved media
-        List<String> savedLines = IO.readData("SP4-ICE IDS LIght/data_SP3/userSaved.csv");
+        List<String> savedLines = IO.readData("SP4-ICE IDS Light/data_SP3/userSaved.csv");
         for (String line : savedLines) {
             if (line.startsWith("username")) continue; // skip header
             String[] parts = line.split(";", 2);
@@ -220,8 +221,8 @@ public class StreamingService {
         }
 
         // Save files using FileIO
-        IO.saveData(seenData, "SP4-ICE IDS LIght/data_SP3/userSeen.csv", null);   // header already included
-        IO.saveData(savedData, "SP4-ICE IDS LIght/data_SP3/userSaved.csv", null);
+        IO.saveData(seenData, "SP4-ICE IDS Light/data_SP3/userSeen.csv", null);   // header already included
+        IO.saveData(savedData, "SP4-ICE IDS Light/data_SP3/userSaved.csv", null);
     }
 
 
@@ -235,7 +236,7 @@ public class StreamingService {
         return false;
     }
 
-    //Added - to be able to validate username for bruteforce.
+    //Added - Used in userConfig() to find a user with a certain username
     private User usernameToUser (String username) {
         for (User u : users) {
             if (u.getUsername().equals(username)) {
@@ -244,11 +245,13 @@ public class StreamingService {
         }
         return null;
     }
-    public void userConfig(){
+    //Added - Allows the admin to remove a lock from a user
+    private void userConfig() {
         String username = ui.promptText("Type the username of the user you want to config");
         User user = usernameToUser(username);
         try {
             user.setIsLocked(false);
+            ui.displayMsg("User config successful");
         } catch (NullPointerException e) {
             ui.displayMsg("No user found");
         }
@@ -281,7 +284,7 @@ public class StreamingService {
         }
 
         // Save all users to CSV
-        String path = "SP4-ICE IDS LIght/data_SP3/userLogin.csv";
+        String path = "SP4-ICE IDS Light/data_SP3/userLogin.csv";
         String header = "username;password";
         IO.saveData(establish, path, header);
 
@@ -300,12 +303,11 @@ public class StreamingService {
 
             if (choice == 1) {
                 createNewUser();
-                continueLoop = false;
             } else if (choice == 2) {
                 User user = logIn();
                 if (user != null) {// Successful login
 
-                    //Added - Blocks user if they login with a locked account
+                    //Added - Blocks user if they log in with a locked account
                     if (user.getIsLocked() == false) {
                         currentUser = user;
                         continueLoop = false; // proceed to main menu
@@ -345,7 +347,7 @@ public class StreamingService {
         while (true) {
             // Prompt user for input using TextUI
             int choice = ui.promptMenu("Main Menu", menuOptions);
-            //Added - Changed switch case to a if statement (below)
+            //Added - Changed switch case to an if statement (below)
             // Handle the menu choice
             /*
             switch (choice) {
@@ -391,7 +393,7 @@ public class StreamingService {
                 ui.displayMsg("Exiting streaming service.");
                 System.exit(0);
 
-                //Added - if Admin you are able to have different menu options
+                //Added - if Admin you are able to have additional menu options
             } else if (choice == 6 && currentUser.getIsAdmin() == true) {
                 currentUser.showThreat(securitySystem);
             } else if (choice == 7 && currentUser.getIsAdmin() == true) {
@@ -400,8 +402,13 @@ public class StreamingService {
                 userConfig();
             } else if ((choice == 6 && currentUser.getIsAdmin() == false) || (choice == 9 && currentUser.getIsAdmin() == true)) {
                 securitySystem.deleteLineInFile(currentUser);
-                System.out.println(currentUser.getIsLocked());
-                System.out.println(currentUser.getDeletedLines());
+                if(currentUser.getIsLocked()) {
+                    ui.displayMsg("Excessive deletion detected, returning to start menu...");
+                    currentUser = null;
+                    startMenu();
+                }
+                // System.out.println(currentUser.getIsLocked());
+                // System.out.println(currentUser.getDeletedLines());
             } else {
                 // If the input doesn't match a valid option
                 ui.displayMsg("Invalid choice, try again.");
@@ -525,18 +532,19 @@ public class StreamingService {
                     if (u.getUsername().equals(username)) {
                         foundUser = u;
 
-                       //system.offHoursLogin(u, LocalDateTime.now());
-
+                        //Able to change time
+                        securitySystem.offHoursLogin(u, LocalDateTime.now());
                         //For at teste off hour lås
-                        securitySystem.offHoursLogin(u, LocalDateTime.parse("2025-12-12T12:00:00"));
+                        // securitySystem.offHoursLogin(u, LocalDateTime.parse("2025-12-12T12:00:00"));
                         break;
                     }
                 }
                 loggedIn = true;
+                //Added - calls bruteforce if username matches but password dosnt
             } else {
                 for(User u : users) {
                     if (u.getUsername().equals(username)){
-                        securitySystem.bruteForce(u, LocalDateTime.now());
+                        securitySystem.bruteForce(u);
                     }
                 }
                 ui.displayMsg("Invalid username or password. Try again, or type 'back' to return.");

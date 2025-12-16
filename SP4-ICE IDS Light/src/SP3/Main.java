@@ -10,7 +10,8 @@ public class Main {
         StreamingService streaming = new StreamingService(securitySystem);
 
 
-        //Ændret her
+
+        //Added - test
         //vigtigt, disse er midterlige, og er kun for at kunne teste systemets forskellige scenarie
         User testLocked = new User("TestLocked", "TestLocked");
         testLocked.setIsLocked(true);
@@ -18,10 +19,10 @@ public class Main {
 
         User test= new User("Test", "Test");
         streaming.getUsers().add(test);
-//SP4-ICE IDS LIght/CSVDataTest/MoviesDynamisk.csv
+       //SP4-ICE IDS Light/CSVDataTest/MoviesDynamisk.csv
 
       //Disse users' logintidspunkter kan blive testet
-        // Ved at hardcode tidspunktet på linje 457 i StreamingService
+        // Ved at hardcode tidspunktet på linje 536 i StreamingService
 
         User testOffLoginPostiv = new User("TestPostiv", "TestPostiv");
         streaming.getUsers().add(testOffLoginPostiv);

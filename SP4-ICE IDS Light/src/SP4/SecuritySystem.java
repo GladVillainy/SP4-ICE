@@ -20,15 +20,18 @@ import java.util.Set;
  */
 
 public class SecuritySystem {
+
+    //variables
+    private int deleteLimit = 10; // used to make the limit for how many lines a user is allowed to delete in csv file
+    private int loginLimit = 3; // used to make a limit for how many times a user is allowed to try to login
    private ArrayList<LogEntry> logEntries = new ArrayList<>();
    private ArrayList<Threat> threats = new ArrayList<>();
    private ArrayList<String> fileLines = new ArrayList<>();
 
+   //Method call's from other classes
     FileIO IO = new FileIO();
     TextUI UI = new TextUI();
-
     private Rules rule;
-
     public SecuritySystem() {
         this.rule = new Rules(this);
     }
@@ -50,7 +53,7 @@ public class SecuritySystem {
         }
 
         // Saves information to CSV
-        String path = "SP4-ICE IDS LIght/LogData/LogEntry.csv";
+        String path = "SP4-ICE IDS Light/LogData/LogEntry.csv";
         String header = "username;timestamp";
         IO.saveData(establish, path, header);
     }
@@ -60,58 +63,53 @@ public class SecuritySystem {
      * @author Lucas & Mikkel
      * Method stores threads in a CSV-file
      * @param type
-     * @param relatedEntries
+     * @param username
      * @param severity
      * @param timestamp
      * @param description
      */
-    public void addThreat(String type, ArrayList<LogEntry> relatedEntries, String severity, LocalDateTime timestamp, String description){
-        Threat TT = new Threat(type, relatedEntries, severity, timestamp, description);
+    public void addThreat(String type, String username, String severity, LocalDateTime timestamp, String description){
+        Threat TT = new Threat(type, username, severity, timestamp, description);
         threats.add(TT);
 
         // Prepares information
         ArrayList<String> establish = new ArrayList<>();
         for (Threat tt : threats) {
-            establish.add(tt.getType() + ";" + tt.getRelatedEntries() + ";" +tt.getSeverity() + ";" +tt.getTimestamp() + ";" +tt.getDescription());
+            establish.add(tt.getType() + ";" + tt.getUsername() + ";" +tt.getSeverity() + ";" +tt.getTimestamp() + ";" +tt.getDescription());
         }
 
         // Saves information to CSV
-        String path = "SP4-ICE IDS LIght/LogData/Threat.csv";
-        String header = "type;logEntryUsername;logEntryTimestamp;severity;timestamp;description";
+        String path = "SP4-ICE IDS Light/LogData/Threat.csv";
+        String header = "type;username;severity;timestamp;description";
         IO.saveData(establish, path, header);
     }
 
 
     /**
      * @author Lucas
-     * This method detects if a bruteforce occurs and calls bruteforceExeute in rule class
+     * This method detects if a bruteforce occurs, if a user tries to login too many times and fails
+     * it calls bruteforceExeute() in rule class
      * Read more about execute methods in rule class
      * @param user
-     * @param timestamp
      */
-    public void bruteForce(User user, LocalDateTime timestamp) {
+    public void bruteForce(User user) {
         user.setFailedAttempts(user.getFailedAttempts() + 1);
-        int limit = 1;
-        if (limit < user.getFailedAttempts()) {
-            Threat BF = new Threat("Bruteforce", logEntries,"Moderate", timestamp, "Forcing entry has been detected");
-            threats.add(BF);
+        if (loginLimit < user.getFailedAttempts()) {
             rule.bruteForceExecute(user);
         }
     }
 
+
     /**
      *  @author Lucas & Mikkel
-     * Method that monitors if a chosen amount of data from a file has been deleted
-     * If limit has been reached it calls excessiveDeletionExecute method in rule class
+     * Method that monitors if a chosen amount of lines from a file has been deleted
+     * If delete limit has been passed it calls excessiveDeletionExecute() method in rule class
      * Read more about execute methods in rule class
      * @param user
-     * @param timestamp
      * @param path_backup
      * @param path_dynamic
      */
-    public void excessiveDeletion(User user, LocalDateTime timestamp, String path_backup, String path_dynamic) {
-      //  String path_backup = "SP4/CSVDataTest/MoviesBackup";
-        // String path_dynamic = "SP4/CSVDataTest/MoviesDynamic";
+    public void excessiveDeletion(User user, String path_backup, String path_dynamic) {
 
         ArrayList<String> backup = IO.readData(path_backup);
 
@@ -126,12 +124,10 @@ public class SecuritySystem {
             }
         }
 
-        int limit = 2; //Can be edited to fit the need of the admin
-        if (user.getDeletedLines() > limit){
-            Threat ED = new Threat("Excessive deletion", logEntries,"Severe", timestamp, "Excessive file deletion has been detected");
-            threats.add(ED);
+        if (user.getDeletedLines() >= deleteLimit){
             rule.excessiveDeletionExecute(user);
         }
+
         /*
         //Jökull
          user.setFilesDeleted(user.getFilesDeleted() + 1);
@@ -146,7 +142,7 @@ public class SecuritySystem {
 
     /**
      * @author Mikkel
-     * This method detects if an of an off hour login occurs and calls offHoursLoginExecute in rule class
+     * This method detects if an of an off hour login occurs and calls offHoursLoginExecute() in rule class
      * Read more about execute methods in rule class
      * @param user
      * @param timestamp
@@ -156,8 +152,6 @@ public class SecuritySystem {
         LocalTime earliestHour = LocalTime.parse("08:00");
         LocalTime latestHour = LocalTime.parse("16:00");
         if (timestamp.toLocalTime().isBefore(earliestHour) || timestamp.toLocalTime().isAfter(latestHour)) {
-            Threat OHL = new Threat("Off hours login", logEntries,"Mild", timestamp, "Unusual login time has been detected");
-            threats.add(OHL);
             rule.offHoursLoginExecute(user);
         }
     }
@@ -165,8 +159,10 @@ public class SecuritySystem {
     /**
      * @author Mikkel
      * Method prompts user if they want to delete a line in a csv file.
-     * If user types y, they are able to selecte the line number they want to delete
-     * If user tpyes n, they will return to main menu in SP3 StreamingService
+     * After deleting a line, the user can type y to delete another, if the delete limit hasn't been passed
+     * If user types n instead, they will return to main menu in SP3 StreamingService
+     * excessiveDeletion() is called at the end
+     * Read more about execute methods in rule class
      * @param user
      */
     public void deleteLineInFile(User user){
@@ -175,14 +171,14 @@ public class SecuritySystem {
             fileLines = IO.readData(path);
             if (!fileLines.isEmpty()) {
                 boolean continueLoop = true;
-                while (continueLoop) {
+                while (continueLoop && user.getDeletedLines() < deleteLimit) {
                     int choice = UI.promptNumeric("Select line to delete");
                     fileLines.remove(choice);
                     user.setDeletedLines(user.getDeletedLines() + 1);
                     continueLoop = UI.promptBinary("Delete another line? Y/N");
                 }
                 IO.saveData(fileLines, path);
-                excessiveDeletion(user, LocalDateTime.now(), "SP4-ICE IDS LIght/CSVDataTest/MoviesBackup.csv", path);
+                excessiveDeletion(user, "SP4-ICE IDS Light/CSVDataTest/MoviesBackup.csv", path);
             }
         }
     }
@@ -195,7 +191,7 @@ public class SecuritySystem {
         logEntries.clear();
 
         // Load LogEntry
-        List<String> logEntryLines = IO.readData("LogEntry.csv");
+        List<String> logEntryLines = IO.readData("SP4-ICE IDS Light/LogData/LogEntry.csv");
         for (String line : logEntryLines) {
             if (line.trim().isEmpty()) continue;
             String[] parts = line.split(";");
@@ -213,23 +209,18 @@ public class SecuritySystem {
     public void loadThreat() {
         threats.clear();
         // Load Threat
-        List<String> threatLines = IO.readData("Threat.csv");
-        ArrayList<LogEntry> relatedEntries = new ArrayList<>();
+        List<String> threatLines = IO.readData("SP4-ICE IDS Light/LogData/Threat.csv");
 
         for (String line : threatLines) {
             if (line.trim().isEmpty()) continue;
             String[] parts = line.split(";");
             String type = parts[0].trim();
-            String relatedEntryUsername = parts[1].trim();
-            LocalDateTime relatedEntryTimeStamp = LocalDateTime.parse(parts[2].trim());
-            String severity = parts[3].trim();
-            LocalDateTime timestamp = LocalDateTime.parse(parts[4].trim());
-            String description = parts[5].trim();
+            String username = parts[1].trim();
+            String severity = parts[2].trim();
+            LocalDateTime timestamp = LocalDateTime.parse(parts[3].trim());
+            String description = parts[4].trim();
 
-            LogEntry relatedEntry = new LogEntry(relatedEntryUsername, relatedEntryTimeStamp);
-            relatedEntries.add(relatedEntry);
-
-            threats.add(new Threat(type, relatedEntries, severity, timestamp, description));
+            threats.add(new Threat(type, username, severity, timestamp, description));
         }
     }
 
